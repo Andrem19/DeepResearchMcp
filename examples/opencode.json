@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "deepresearch": {
+      "type": "remote",
+      "url": "https://your-domain.example/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer YOUR_SECRET_TOKEN"
+      },
+      "timeout": 120000
+    }
+  }
+}

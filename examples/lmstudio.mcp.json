@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "deepresearch": {
+      "url": "https://your-domain.example/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_SECRET_TOKEN"
+      }
+    }
+  }
+}
