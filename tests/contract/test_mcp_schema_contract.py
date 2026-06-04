@@ -1,7 +1,7 @@
 """Contract tests: MCP tool schema conformance.
 
 Verifies that the deep_research tool is registered with the correct name
-and expected parameters.
+and expected parameters. Tool schema is simplified for local model compatibility.
 """
 
 from __future__ import annotations
@@ -25,14 +25,12 @@ class TestMCPToolSchema:
         func = self._import_deep_research_function()
         assert func.__name__ == "deep_research"
 
-    def test_tool_has_expected_parameters(self):
-        """The tool signature contains exactly the expected parameters."""
+    def test_tool_has_only_query_parameter(self):
+        """The tool signature contains only the query parameter (simplified for local models)."""
         func = self._import_deep_research_function()
         sig = inspect.signature(func)
         params = list(sig.parameters.keys())
-
-        expected = ["query", "depth", "max_sources", "recency_days", "output_format"]
-        assert params == expected
+        assert params == ["query"]
 
     def test_query_parameter_is_str(self):
         """query is a str parameter (required, no default)."""
@@ -40,32 +38,8 @@ class TestMCPToolSchema:
         sig = inspect.signature(func)
         assert sig.parameters["query"].default is inspect.Parameter.empty
 
-    def test_depth_default_is_standard(self):
-        """depth defaults to 'standard'."""
-        func = self._import_deep_research_function()
-        sig = inspect.signature(func)
-        assert sig.parameters["depth"].default == "standard"
-
-    def test_max_sources_default_is_8(self):
-        """max_sources defaults to 8."""
-        func = self._import_deep_research_function()
-        sig = inspect.signature(func)
-        assert sig.parameters["max_sources"].default == 8
-
-    def test_recency_days_default_is_none(self):
-        """recency_days defaults to None."""
-        func = self._import_deep_research_function()
-        sig = inspect.signature(func)
-        assert sig.parameters["recency_days"].default is None
-
-    def test_output_format_default_is_markdown(self):
-        """output_format defaults to 'markdown'."""
-        func = self._import_deep_research_function()
-        sig = inspect.signature(func)
-        assert sig.parameters["output_format"].default == "markdown"
-
     def test_return_type_is_str(self):
-        """The tool returns a str (annotation may be string form due to `from __future__ import annotations`)."""
+        """The tool returns a str."""
         func = self._import_deep_research_function()
         sig = inspect.signature(func)
         ann = sig.return_annotation
@@ -85,5 +59,4 @@ class TestMCPToolSchema:
     def test_mcp_server_name_is_deep_research(self):
         """The FastMCP instance is named 'DeepResearch'."""
         from app.mcp_server import mcp
-        # FastMCP stores the name attribute
         assert mcp.name == "DeepResearch"

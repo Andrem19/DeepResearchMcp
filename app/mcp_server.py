@@ -39,32 +39,13 @@ def _get_job_manager():
 
 
 @mcp.tool()
-async def deep_research(
-    query: str,
-    depth: str = "standard",
-    max_sources: int = 8,
-    recency_days: int | None = None,
-    output_format: str = "markdown",
-) -> str:
-    """Deep research tool — searches, reads, compares sources, and returns a Markdown report with citations.
+async def deep_research(query: str) -> str:
+    """Research a topic. Searches the web, reads sources, and returns a Markdown report.
 
-    This tool independently performs web search, reads multiple sources,
-    extracts key information, cross-references evidence, and generates
-    a comprehensive research report. The result may contain limitations
-    if sources are scarce or conflicting.
-
-    Args:
-        query: Research question or topic to investigate.
-        depth: Research depth — "quick" (2 queries), "standard" (4 queries), "deep" (6 queries).
-        max_sources: Maximum number of sources to include (server enforces upper limit).
-        recency_days: Only include sources from the last N days. None = no filter.
-        output_format: Output format. Currently only "markdown" is supported.
-
-    Returns:
-        Markdown research report with summary, key findings, sources, and limitations.
+    Returns a report with summary, key findings, sources with citations, and limitations.
     """
     engine = _get_engine()
-    return await engine.run_markdown(query, depth, max_sources, recency_days)
+    return await engine.run_markdown(query)
 
 
 # ---------------------------------------------------------------------------
@@ -73,36 +54,20 @@ async def deep_research(
 
 
 @mcp.tool()
-async def start_deep_research(
-    query: str,
-    depth: str = "standard",
-    max_sources: int = 8,
-    recency_days: int | None = None,
-) -> str:
-    """Start a background research job. Returns a job_id immediately.
-
-    Use get_research_status to check progress and get_research_report to retrieve results.
-    This is useful for long-running research that may exceed client timeouts.
+async def start_deep_research(query: str) -> str:
+    """Start a background research job. Returns a job_id immediately. Use get_research_status to check progress and get_research_report to get results.
 
     Args:
         query: Research question or topic to investigate.
-        depth: Research depth — "quick", "standard", or "deep".
-        max_sources: Maximum number of sources to include.
-        recency_days: Only include sources from the last N days. None = no filter.
-
-    Returns:
-        JSON with job_id and status.
     """
     import json
 
     manager = _get_job_manager()
-    job = await manager.start_research(query, depth, max_sources, recency_days)
+    job = await manager.start_research(query)
     return json.dumps({
         "job_id": job.job_id,
         "status": job.status.value,
         "query": job.query,
-        "depth": job.depth,
-        "created_at": job.created_at.isoformat(),
     })
 
 
