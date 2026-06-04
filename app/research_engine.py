@@ -293,7 +293,27 @@ def _create_search_provider(config: AppConfig) -> SearchProvider:
         from app.search.fake import FakeSearchProvider
         return FakeSearchProvider()
 
-    # Real providers will be added in stage 8
+    if config.search_provider == "duckduckgo":
+        from app.search.duckduckgo import DuckDuckGoProvider
+        return DuckDuckGoProvider()
+
+    if config.search_provider == "searxng":
+        from app.search.searxng import SearXNGProvider
+        return SearXNGProvider(base_url=config.searxng_url)
+
+    if config.search_provider == "brave" and config.brave_api_key:
+        from app.search.brave import BraveSearchProvider
+        return BraveSearchProvider(api_key=config.brave_api_key)
+
+    if config.search_provider == "tavily" and config.tavily_api_key:
+        from app.search.tavily import TavilySearchProvider
+        return TavilySearchProvider(api_key=config.tavily_api_key)
+
+    if config.search_provider == "serper" and config.serper_api_key:
+        from app.search.serper import SerperSearchProvider
+        return SerperSearchProvider(api_key=config.serper_api_key)
+
+    # Fallback to fake
     from app.search.fake import FakeSearchProvider
     return FakeSearchProvider()
 

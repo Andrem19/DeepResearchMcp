@@ -19,7 +19,8 @@ class AppConfig:
     bearer_token: str = ""
 
     # Providers
-    search_provider: Literal["fake", "brave", "tavily", "serper"] = "fake"
+    search_provider: Literal["fake", "duckduckgo", "brave", "tavily", "serper", "searxng"] = "duckduckgo"
+    searxng_url: str = "http://127.0.0.1:8080"
     llm_provider: Literal["extractive", "openai"] = "extractive"
 
     # API Keys (empty = not configured)
@@ -96,7 +97,7 @@ def load_config(env: dict[str, str] | None = None) -> AppConfig:
         return [d.strip().lower() for d in raw.split(",") if d.strip()]
 
     search_provider = _get("SEARCH_PROVIDER", "fake")
-    if search_provider not in ("fake", "brave", "tavily", "serper"):
+    if search_provider not in ("fake", "duckduckgo", "brave", "tavily", "serper", "searxng"):
         raise ConfigError(f"Unknown SEARCH_PROVIDER: {search_provider!r}")
 
     llm_provider = _get("LLM_PROVIDER", "extractive")
@@ -118,6 +119,7 @@ def load_config(env: dict[str, str] | None = None) -> AppConfig:
         brave_api_key=_get("BRAVE_API_KEY"),
         tavily_api_key=_get("TAVILY_API_KEY"),
         serper_api_key=_get("SERPER_API_KEY"),
+        searxng_url=_get("SEARXNG_URL", "http://127.0.0.1:8080"),
         llm_api_key=_get("LLM_API_KEY"),
         llm_api_base=_get("LLM_API_BASE"),
         llm_model=_get("LLM_MODEL"),
