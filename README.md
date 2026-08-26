@@ -89,10 +89,11 @@ deep_research(
 
 ```bash
 conda activate dr1
-python -m pytest
 ruff check .
-python -m mypy app tests
+python -m pytest
 ```
+
+Static typing is configured for incremental use, but it is not yet a CI gate for the full legacy test suite.
 
 ## License
 
