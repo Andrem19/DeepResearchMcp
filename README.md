@@ -1,25 +1,33 @@
 # DeepResearch MCP Server
 
-Лёгкий MCP-сервер глубокого исследования. Принимает короткий запрос, самостоятельно ищет, читает, сравнивает источники и возвращает готовый Markdown-отчёт с цитатами.
+A lightweight Model Context Protocol server for deep web research. It accepts a compact research request, searches and reads sources, compares evidence, and returns a structured Markdown report with citations.
 
-## Зачем
+## Why It Exists
 
-Слабые локальные модели и coding-агенты не могут эффективно управлять десятками low-level инструментов для веб-поиска. Этот сервер предоставляет **один понятный MCP-tool** `deep_research`, а вся сложность скрыта внутри.
+Small local models and coding agents often perform poorly when they must coordinate many low-level search and browsing tools. DeepResearch MCP exposes a single high-level tool — `deep_research` — and keeps the retrieval, reading, comparison, and report-building workflow inside the server.
 
-## Быстрый старт
+## Highlights
+
+- One high-level MCP tool instead of a large low-level tool surface.
+- Multi-source research with configurable depth and recency.
+- Structured Markdown reports with citations.
+- Provider abstraction for search backends.
+- SSRF protection, bearer-token authentication, limits, and timeouts.
+- Offline test coverage that does not require paid API access.
+- Designed to reduce orchestration burden for smaller local models.
+
+## Quick Start
 
 ```bash
-# Создание conda-окружения
 conda create -n dr1 python=3.12 -y
 conda activate dr1
-
-# Установка зависимостей
 pip install -e ".[dev]"
-
-# Запуск с fake provider (без сети)
 python -m app.mcp_server
+```
 
-# Запуск с реальным search provider
+Run with a real search provider:
+
+```bash
 SEARCH_PROVIDER=brave BRAVE_API_KEY=your-key python -m app.mcp_server
 ```
 
@@ -27,15 +35,15 @@ SEARCH_PROVIDER=brave BRAVE_API_KEY=your-key python -m app.mcp_server
 
 ```text
 deep_research(
-    query: str,                              # Исследовательский запрос
+    query: str,
     depth: "quick" | "standard" | "deep" = "standard",
-    max_sources: int = 8,                    # Лимит источников (сервер ограничивает сверху)
-    recency_days: int | None = None,         # Свежесть источников
+    max_sources: int = 8,
+    recency_days: int | None = None,
     output_format: "markdown" = "markdown"
-) -> str                                     # Markdown-отчёт
+) -> str
 ```
 
-## Подключение
+## Client Configuration
 
 ### OpenCode
 
@@ -70,28 +78,22 @@ deep_research(
 }
 ```
 
-## Принципы
+## Engineering Principles
 
-- **Один MCP-tool** — клиент не управляет внутренними шагами.
-- **Готовый отчёт** — Markdown с цитатами, а не сырые данные.
-- **Безопасность** — SSRF-защита, Bearer token, лимиты, таймауты.
-- **Offline-тесты** — все тесты работают без сети и без платных API.
+- **Small public interface** — the client delegates research rather than micromanaging internal steps.
+- **Report-oriented output** — callers receive a finished sourced report instead of raw retrieval results.
+- **Safety boundaries** — outbound requests are constrained by SSRF protection, authentication, timeouts, and limits.
+- **Deterministic development path** — tests can run offline without external API keys.
 
-## Разработка
+## Development
 
 ```bash
 conda activate dr1
-
-# Тесты (offline, без API keys)
 python -m pytest
-
-# Lint
 ruff check .
-
-# Type check
 python -m mypy app tests
 ```
 
-## Лицензия
+## License
 
 MIT
